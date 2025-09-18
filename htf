@@ -1,0 +1,117 @@
+local player = game.Players.LocalPlayer
+local savedCFrame = nil
+local minimized = false
+
+local screenGui = Instance.new("ScreenGui")
+screenGui.Name = "TeleportGui"
+screenGui.ResetOnSpawn = false
+screenGui.Parent = player:WaitForChild("PlayerGui")
+
+local frame = Instance.new("Frame")
+frame.Size = UDim2.new(0, 260, 0, 180)
+frame.Position = UDim2.new(0.05, 0, 0.2, 0)
+frame.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+frame.BackgroundTransparency = 0.3
+frame.Active = true
+frame.Draggable = true
+frame.Parent = screenGui
+
+local frameCorner = Instance.new("UICorner")
+frameCorner.CornerRadius = UDim.new(0, 15)
+frameCorner.Parent = frame
+
+local statusLabel = Instance.new("TextLabel")
+statusLabel.Size = UDim2.new(1, -20, 0, 30)
+statusLabel.Position = UDim2.new(0, 10, 0, 10)
+statusLabel.BackgroundTransparency = 1
+statusLabel.Text = "未保存位置"
+statusLabel.TextColor3 = Color3.new(1, 1, 1)
+statusLabel.TextScaled = true
+statusLabel.Parent = frame
+
+local saveButton = Instance.new("TextButton")
+saveButton.Size = UDim2.new(1, -20, 0, 40)
+saveButton.Position = UDim2.new(0, 10, 0, 50)
+saveButton.Text = "保存当前位置"
+saveButton.BackgroundColor3 = Color3.fromRGB(70, 130, 180)
+saveButton.TextColor3 = Color3.new(1, 1, 1)
+saveButton.Parent = frame
+
+local saveCorner = Instance.new("UICorner")
+saveCorner.CornerRadius = UDim.new(0, 10)
+saveCorner.Parent = saveButton
+
+local tpButton = Instance.new("TextButton")
+tpButton.Size = UDim2.new(1, -20, 0, 40)
+tpButton.Position = UDim2.new(0, 10, 0, 95)
+tpButton.Text = "传送到保存位置"
+tpButton.BackgroundColor3 = Color3.fromRGB(34, 139, 34)
+tpButton.TextColor3 = Color3.new(1, 1, 1)
+tpButton.Parent = frame
+
+local tpCorner = Instance.new("UICorner")
+tpCorner.CornerRadius = UDim.new(0, 10)
+tpCorner.Parent = tpButton
+
+local closeButton = Instance.new("TextButton")
+closeButton.Size = UDim2.new(0, 25, 0, 25)
+closeButton.Position = UDim2.new(1, -30, 0, 5)
+closeButton.Text = "❌"
+closeButton.BackgroundColor3 = Color3.fromRGB(200, 50, 50)
+closeButton.TextColor3 = Color3.new(1, 1, 1)
+closeButton.Parent = frame
+
+local closeCorner = Instance.new("UICorner")
+closeCorner.CornerRadius = UDim.new(0, 5)
+closeCorner.Parent = closeButton
+
+local minButton = Instance.new("TextButton")
+minButton.Size = UDim2.new(0, 120, 0, 25)
+minButton.Position = UDim2.new(0, 10, 0, 5)
+minButton.Text = "纯传送指定坐标"
+minButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+minButton.TextColor3 = Color3.new(1, 1, 1)
+minButton.Parent = frame
+
+local minCorner = Instance.new("UICorner")
+minCorner.CornerRadius = UDim.new(0, 5)
+minCorner.Parent = minButton
+
+local function savePosition()
+	local char = player.Character or player.CharacterAdded:Wait()
+	local hrp = char:WaitForChild("HumanoidRootPart")
+	savedCFrame = hrp.CFrame
+	statusLabel.Text = "已保存位置"
+end
+
+local function teleportToSaved()
+	if savedCFrame then
+		local char = player.Character or player.CharacterAdded:Wait()
+		local hrp = char:WaitForChild("HumanoidRootPart")
+		hrp.CFrame = savedCFrame
+	else
+		statusLabel.Text = "未保存位置"
+	end
+end
+
+closeButton.MouseButton1Click:Connect(function()
+	frame.Visible = false
+end)
+
+minButton.MouseButton1Click:Connect(function()
+	minimized = not minimized
+	if minimized then
+		saveButton.Visible = false
+		tpButton.Visible = false
+		statusLabel.Visible = false
+		frame.Size = UDim2.new(0, 260, 0, 35)
+	else
+		saveButton.Visible = true
+		tpButton.Visible = true
+		statusLabel.Visible = true
+		frame.Size = UDim2.new(0, 260, 0, 180)
+	end
+end)
+
+saveButton.MouseButton1Click:Connect(savePosition)
+tpButton.MouseButton1Click:Connect(teleportToSaved)
